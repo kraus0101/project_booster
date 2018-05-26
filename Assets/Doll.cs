@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Doll : MonoBehaviour {
 
+    [SerializeField] float rcsThrust = 100f;
+    [SerializeField] float mainThrust = 100f;
     Rigidbody rigidBody;
     AudioSource audioSource;
 
@@ -24,7 +26,7 @@ public class Doll : MonoBehaviour {
     {
         if (Input.GetKey(KeyCode.Space))//can thrust while rotating
         {
-            rigidBody.AddRelativeForce(Vector3.up);
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
             if (!audioSource.isPlaying)//so it doesnt't layer
             {
                 audioSource.Play();
@@ -39,15 +41,17 @@ public class Doll : MonoBehaviour {
     private void Rotate()
     {
         rigidBody.freezeRotation = true;// take manual control of ratation
+        float rotationThisFrame = rcsThrust * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.forward);
+
+            transform.Rotate(Vector3.forward * rotationThisFrame);
         }
 
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(-Vector3.forward);
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
 
         rigidBody.freezeRotation = false; // resume physics control of ratation
