@@ -1,15 +1,21 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Doll : MonoBehaviour {
 
+    //todo fix lighting bug
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+    [SerializeField] AudioClip mainEngine;
+    [SerializeField] AudioClip success;
+    [SerializeField] AudioClip death;
+  
     Rigidbody rigidBody;
     AudioSource audioSource;
 
+    enum State { Alive, Transcending, Dying};
+    State state = State.Alive;
+                       
 	// Use this for initialization
 	void Start () {
         rigidBody = GetComponent<Rigidbody>();
@@ -18,35 +24,63 @@ public class Doll : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Thrust();
-        Rotate();
+        //todo somewhere stop sound on death
+        if (state == State.Alive)
+        {
+            
+            RespondToThrustInput();
+            RespondToRotateInput();
+        }
 		
 	}
     void OnCollisionEnter(Collision collision) {
+        if (state != State.Alive) { return; }//ignore collision when dead
+
         switch (collision.gameObject.tag) {
 
             case "Friendly"://do nothing
-                print("Ok");//todo remove
+                
                 break;
-            case "Fuel"://do nothing
-                print("Fuel");//todo remove
+            case "Finish":
+                StartSuccessSequence();
                 break;
-  
+
             default:
-                print("Dead");
-                //kill player
+                StartDeathSequence();
                 break;
         }
     }
-    private void Thrust()
+
+    private void StartSuccessSequence()
+    {
+        state = State.Transcending;
+        audioSource.Stop();
+        audioSource.PlayOneShot(success);
+        Invoke("LoadNextLevel", 1f);//parameterise time
+    }
+
+    private void StartDeathSequence()
+    {
+        state = State.Dying;
+        audioSource.Stop();
+        audioSource.PlayOneShot(death);
+        Invoke("LoadFirstLevel", 1f);//parameterise time
+    }
+
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1);
+    }
+    private void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    private void RespondToThrustInput()
     {
         if (Input.GetKey(KeyCode.Space))//can thrust while rotating
         {
-            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
-            if (!audioSource.isPlaying)//so it doesnt't layer
-            {
-                audioSource.Play();
-            }
+            ApplyThrust();
         }
         else
         {
@@ -54,7 +88,16 @@ public class Doll : MonoBehaviour {
         }
     }
 
-    private void Rotate()
+    private void ApplyThrust()
+    {
+        rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+        if (!audioSource.isPlaying)//so it doesnt't layer
+        {
+            audioSource.PlayOneShot(mainEngine);
+        }
+    }
+
+    private void RespondToRotateInput()
     {
         rigidBody.freezeRotation = true;// take manual control of ratation
         float rotationThisFrame = rcsThrust * Time.deltaTime;
