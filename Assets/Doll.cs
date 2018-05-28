@@ -9,6 +9,10 @@ public class Doll : MonoBehaviour {
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip success;
     [SerializeField] AudioClip death;
+
+    [SerializeField] ParticleSystem mainEngineParticle;
+    [SerializeField] ParticleSystem successParticle;
+    [SerializeField] ParticleSystem deathParticle;
   
     Rigidbody rigidBody;
     AudioSource audioSource;
@@ -24,10 +28,8 @@ public class Doll : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        //todo somewhere stop sound on death
         if (state == State.Alive)
         {
-            
             RespondToThrustInput();
             RespondToRotateInput();
         }
@@ -56,6 +58,7 @@ public class Doll : MonoBehaviour {
         state = State.Transcending;
         audioSource.Stop();
         audioSource.PlayOneShot(success);
+        successParticle.Play();
         Invoke("LoadNextLevel", 1f);//parameterise time
     }
 
@@ -64,6 +67,7 @@ public class Doll : MonoBehaviour {
         state = State.Dying;
         audioSource.Stop();
         audioSource.PlayOneShot(death);
+        deathParticle.Play();
         Invoke("LoadFirstLevel", 1f);//parameterise time
     }
 
@@ -85,6 +89,7 @@ public class Doll : MonoBehaviour {
         else
         {
             audioSource.Stop();
+            mainEngineParticle.Stop();
         }
     }
 
@@ -95,6 +100,7 @@ public class Doll : MonoBehaviour {
         {
             audioSource.PlayOneShot(mainEngine);
         }
+        mainEngineParticle.Play();
     }
 
     private void RespondToRotateInput()
