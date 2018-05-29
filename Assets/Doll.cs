@@ -6,7 +6,7 @@ public class Doll : MonoBehaviour {
     //todo fix lighting bug
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
-    [SerializeField] float levelLoadDelay = 2f;
+    [SerializeField] float levelLoadDelay = 1f;
 
 
     [SerializeField] AudioClip mainEngine;
