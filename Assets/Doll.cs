@@ -6,6 +6,9 @@ public class Doll : MonoBehaviour {
     //todo fix lighting bug
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+    [SerializeField] float levelLoadDelay = 2f;
+
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip success;
     [SerializeField] AudioClip death;
@@ -59,7 +62,7 @@ public class Doll : MonoBehaviour {
         audioSource.Stop();
         audioSource.PlayOneShot(success);
         successParticle.Play();
-        Invoke("LoadNextLevel", 1f);//parameterise time
+        Invoke("LoadNextLevel", levelLoadDelay);//parameterise time
     }
 
     private void StartDeathSequence()
@@ -68,7 +71,7 @@ public class Doll : MonoBehaviour {
         audioSource.Stop();
         audioSource.PlayOneShot(death);
         deathParticle.Play();
-        Invoke("LoadFirstLevel", 1f);//parameterise time
+        Invoke("LoadFirstLevel", levelLoadDelay);//parameterise time
     }
 
     private void LoadNextLevel()
@@ -95,7 +98,7 @@ public class Doll : MonoBehaviour {
 
     private void ApplyThrust()
     {
-        rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+        rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);//말하자면 속력 x 시간인거
         if (!audioSource.isPlaying)//so it doesnt't layer
         {
             audioSource.PlayOneShot(mainEngine);
