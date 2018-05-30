@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Doll : MonoBehaviour {
+public class Doll : MonoBehaviour
+{
 
-    //todo fix lighting bug
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
     [SerializeField] float levelLoadDelay = 1f;
@@ -16,35 +16,39 @@ public class Doll : MonoBehaviour {
     [SerializeField] ParticleSystem mainEngineParticle;
     [SerializeField] ParticleSystem successParticle;
     [SerializeField] ParticleSystem deathParticle;
-  
+
     Rigidbody rigidBody;
     AudioSource audioSource;
 
-    enum State { Alive, Transcending, Dying};
+    enum State { Alive, Transcending, Dying };
     State state = State.Alive;
-                       
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start()
+    {
         rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         if (state == State.Alive)
         {
             RespondToThrustInput();
             RespondToRotateInput();
         }
-		
-	}
-    void OnCollisionEnter(Collision collision) {
+
+    }
+    void OnCollisionEnter(Collision collision)
+    {
         if (state != State.Alive) { return; }//ignore collision when dead
 
-        switch (collision.gameObject.tag) {
+        switch (collision.gameObject.tag)
+        {
 
             case "Friendly"://do nothing
-                
+
                 break;
             case "Finish":
                 StartSuccessSequence();
