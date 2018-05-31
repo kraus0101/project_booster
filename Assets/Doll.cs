@@ -85,7 +85,7 @@ public class Doll : MonoBehaviour
     }
     private void LoadFirstLevel()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(3);
     }
 
     private void RespondToThrustInput()
