@@ -81,10 +81,11 @@ public class Doll : MonoBehaviour
     private void LoadNextLevel()
     {
         SceneManager.LoadScene(1);
+
     }
     private void LoadFirstLevel()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(2);
     }
 
     private void RespondToThrustInput()
