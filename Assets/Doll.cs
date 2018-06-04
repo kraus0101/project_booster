@@ -98,12 +98,20 @@ public class Doll : MonoBehaviour
 
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (currentSceneIndex == SceneManager.sceneCountInBuildSettings) 
+        {
+            nextSceneIndex = 0; //for loop back to start 
+        }
+        SceneManager.LoadScene(nextSceneIndex);
 
     }
+
+
     private void LoadFirstLevel()
     {
-        SceneManager.LoadScene(3);
+        SceneManager.LoadScene(0);
     }
 
     private void RespondToThrustInput()
