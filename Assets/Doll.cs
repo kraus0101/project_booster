@@ -22,6 +22,7 @@ public class Doll : MonoBehaviour
 
     enum State { Alive, Transcending, Dying };
     State state = State.Alive;
+    bool collisionsDisabled = false;
 
     // Use this for initialization
     void Start()
@@ -37,12 +38,29 @@ public class Doll : MonoBehaviour
         {
             RespondToThrustInput();
             RespondToRotateInput();
-        }
 
+        }
+        if (Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
     }
+
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionsDisabled = !collisionsDisabled;//toggle
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive) { return; }//ignore collision when dead
+        if (state != State.Alive || collisionsDisabled) { return; }//ignore collision when dead
 
         switch (collision.gameObject.tag)
         {
