@@ -20,8 +20,7 @@ public class Doll : MonoBehaviour
     Rigidbody rigidBody;
     AudioSource audioSource;
 
-    enum State { Alive, Transcending, Dying };
-    State state = State.Alive;
+    bool isTransitioning = false;
     bool collisionsDisabled = false;
 
     // Use this for initialization
@@ -34,7 +33,7 @@ public class Doll : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (state == State.Alive)
+        if (!isTransitioning)
         {
             RespondToThrustInput();
             RespondToRotateInput();
@@ -60,7 +59,7 @@ public class Doll : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive || collisionsDisabled) { return; }//ignore collision when dead
+        if (isTransitioning || collisionsDisabled) { return; }//ignore collision when dead
 
         switch (collision.gameObject.tag)
         {
@@ -80,7 +79,7 @@ public class Doll : MonoBehaviour
 
     private void StartSuccessSequence()
     {
-        state = State.Transcending;
+        isTransitioning = true;
         audioSource.Stop();
         audioSource.PlayOneShot(success);
         successParticle.Play();
@@ -89,7 +88,7 @@ public class Doll : MonoBehaviour
 
     private void StartDeathSequence()
     {
-        state = State.Dying;
+        isTransitioning = true;
         audioSource.Stop();
         audioSource.PlayOneShot(death);
         deathParticle.Play();
@@ -100,7 +99,7 @@ public class Doll : MonoBehaviour
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         int nextSceneIndex = currentSceneIndex + 1;
-        if (currentSceneIndex == SceneManager.sceneCountInBuildSettings) 
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings) 
         {
             nextSceneIndex = 0; //for loop back to start 
         }
@@ -122,9 +121,14 @@ public class Doll : MonoBehaviour
         }
         else
         {
-            audioSource.Stop();
-            mainEngineParticle.Stop();
+            StopApplyingThrust();
         }
+    }
+
+    private void StopApplyingThrust()
+    {
+        audioSource.Stop();
+        mainEngineParticle.Stop();
     }
 
     private void ApplyThrust()
@@ -139,7 +143,8 @@ public class Doll : MonoBehaviour
 
     private void RespondToRotateInput()
     {
-        rigidBody.freezeRotation = true;// take manual control of ratation
+        rigidBody.angularVelocity = Vector3.zero;//remove rotation due to physics
+
         float rotationThisFrame = rcsThrust * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.A))
@@ -152,8 +157,6 @@ public class Doll : MonoBehaviour
         {
             transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
-
-        rigidBody.freezeRotation = false; // resume physics control of ratation
     }
 
 }
